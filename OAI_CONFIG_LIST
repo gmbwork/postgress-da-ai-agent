@@ -1,0 +1,15 @@
+[
+    {
+        "model": "gpt-3.5-turbo-1106"
+    },
+    {
+        "model": "Zephyr-7B",
+        "base_url": "http://localhost:1234/v1",
+        "api_key": "NULL"
+    },
+    {
+        "model": "mistral-7b",
+        "base_url": "http://localhost:1234/v1",
+        "api_key": "NULL"
+    }
+]
