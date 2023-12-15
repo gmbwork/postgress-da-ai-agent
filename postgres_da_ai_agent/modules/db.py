@@ -63,6 +63,7 @@ class PostgresManager:
     #     return self.cur.fetchall()
 
     def run_sql(self, sql) -> str:
+        #query = sql.replace("```sql", "").replace("```", "")
         self.cur.execute(sql)
         columns = [desc[0] for desc in self.cur.description]
         res = self.cur.fetchall()

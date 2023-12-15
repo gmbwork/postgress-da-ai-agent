@@ -3,13 +3,18 @@
         "model": "gpt-3.5-turbo-1106"
     },
     {
-        "model": "Zephyr-7B",
-        "base_url": "http://localhost:1234/v1",
+        "model": "codellama",
+        "base_url": "http://0.0.0.0:8000",
         "api_key": "NULL"
     },
     {
-        "model": "mistral-7b",
-        "base_url": "http://localhost:1234/v1",
+        "model": "mistral",
+        "base_url": "http://0.0.0.0:18976",
+        "api_key": "NULL"
+    },
+    {
+        "model": "sqlcoder",
+        "base_url": "http://0.0.0.0:17470",
         "api_key": "NULL"
     }
 ]

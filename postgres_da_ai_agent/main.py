@@ -4,11 +4,13 @@ from postgres_da_ai_agent.modules.db import PostgresManager
 import dotenv
 import argparse
 import autogen
+from postgres_da_ai_agent.modules.llm_configuraiton import codellama_llm_config, mistral_llm_config, sqlcoder_llm_config
+from postgres_da_ai_agent.modules.data_base_query_prompt import generate_sqlcoder_prompt
 
 dotenv.load_dotenv()
 
 assert os.environ.get("DATABASE_URL") is not None, "POSTGRES_CONNECTION_URL not found in .env file"
-assert os.environ.get("OPENAI_API_KEY") != "", "OPENAI_API_KEY is empty in .env file"
+#assert os.environ.get("OPENAI_API_KEY") != "", "OPENAI_API_KEY is empty in .env file"
 
 DB_URL = os.environ.get("DATABASE_URL")
 #OPEBNAI_API_KEY = os.environ.get("OPENAI_API_KEY")
@@ -52,45 +54,18 @@ def main():
 
         table_definitions = db.get_table_definitions_for_prompt()
 
-        prompt = add_cap_ref(
-            prompt,
-            f"Use this {POSTGRES_TABLE_DEFINITIONS_CAP_REF} to satisfy the database SQL query.",
-            POSTGRES_TABLE_DEFINITIONS_CAP_REF,
-            table_definitions,
+        # prompt = add_cap_ref(
+        #     prompt,
+        #     f"Use this {POSTGRES_TABLE_DEFINITIONS_CAP_REF} to satisfy the database SQL query.",
+        #     POSTGRES_TABLE_DEFINITIONS_CAP_REF,
+        #     table_definitions,
+        # )
+        prompt = generate_sqlcoder_prompt(
+            prompt, 
+            table_definitions
         )
 
         print("Promopt after adding table definitions:", prompt)
-
-        config_list= autogen.config_list_from_json(
-           env_or_file="OAI_CONFIG_LIST",
-            filter_dict={
-                "model": ["gpt-3.5-turbo-1106"],
-            }
-)
-
-        # build the gpt_configuration object
-        llm_config = {
-            "cache_seed": 0,
-            "temperature": 0,
-            "config_list": config_list,
-            "timeout": 120,
-            "functions": [
-                {
-                    "name": "run_sql",
-                    "description": "Run a SQL query against the postgres database",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "sql": {
-                                "type": "string",
-                                "description": "The SQL query to run against the database",
-                            }
-                        },
-                        "required": ["sql"],
-                    },
-                },
-            ],
-        }
 
         # build the funcation map
         function_map = {
@@ -139,7 +114,7 @@ def main():
         # data engineer agent - generates the sql query
         data_engineer = autogen.AssistantAgent(
             name="Engineer",
-            llm_config=llm_config,
+            llm_config=sqlcoder_llm_config,
             system_message=DATA_ENGINEER_PROMPT,
             code_execution_config=False,
             human_input_mode="NEVER",
@@ -149,7 +124,7 @@ def main():
         # sr data analyst agent - runs the sql query and generates the response
         sr_data_analyst = autogen.AssistantAgent(
             name="Sr_Data_Analyst",
-            llm_config=llm_config,
+            llm_config=mistral_llm_config,
             system_message=SR_DATA_ANALYST_PROMPT,
             human_input_mode="NEVER",
             is_termination_msg=is_terminate_msg,
@@ -163,7 +138,7 @@ def main():
         # product manager agent - validates the response to make sure it's correct
         product_manager = autogen.AssistantAgent(
             name="Product_Manager",
-            llm_config=llm_config,
+            llm_config=mistral_llm_config,
             system_message=PRODUCT_MANAGER_PROMPT,
             code_execution_config=False,
             human_input_mode="NEVER",
@@ -176,7 +151,7 @@ def main():
             messages=[],
             max_round=5,
         )
-        manager = autogen.GroupChatManager(groupchat=groupchat, llm_config=llm_config)
+        manager = autogen.GroupChatManager(groupchat=groupchat, llm_config=mistral_llm_config)
         user_proxy.initiate_chat(manager, clear_history=True, message=prompt)
 
 if __name__ == '__main__':

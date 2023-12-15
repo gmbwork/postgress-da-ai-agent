@@ -13,6 +13,7 @@ pyautogen = "^0.2.1"
 psycopg2-binary = "^2.9.9"
 argparse = "^1.4.0"
 python-dotenv = "^1.0.0"
+litellm = "^1.14.7"
 
 [build-system]
 requires = ["poetry-core"]
