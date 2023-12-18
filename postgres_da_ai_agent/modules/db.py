@@ -66,11 +66,16 @@ class PostgresManager:
         self.cur.execute(sql)
         columns = [desc[0] for desc in self.cur.description]
         res = self.cur.fetchall()
-
+        
         list_of_dicts = [dict(zip(columns, row)) for row in res]
-
+        
         json_result = json.dumps(list_of_dicts, indent=4, default=self.datetime_handler)
-        return json_result
+        
+        # dump this results to a file
+        with open("results.json", "w") as f:
+            f.write(json_result)
+        
+        return "Succfully ran SQL query and saved results to results.json"
 
     def datetime_handler(self, obj):
         """
@@ -114,3 +119,30 @@ class PostgresManager:
         for table_name in table_names:
             definitions.append(self.get_table_definition(table_name))
         return "\n\n".join(definitions)
+    
+    def get_table_definitions_for_prompt_MOCK(self):
+        return """CREATE TABLE users (
+id SERIAL PRIMARY KEY,
+created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+updated_date TIMESTAMP,
+is_automated BOOLEAN,
+plan VARCHAR(255),
+name VARCHAR(255),
+email VARCHAR(255)
+);
+
+CREATE TABLE jobs (
+id SERIAL PRIMARY KEY,
+created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+parentuserid INTEGER REFERENCES users(id),
+status VARCHAR(255),
+total_duration INTEGER
+    );"""
+
+    def get_table_definitions_map_for_embeddings(self):
+        table_names = self.get_all_table_names()
+        definitions = {}
+        for table_name in table_names:
+            definitions[table_name] = self.get_table_definition(table_name)
+        return definitions

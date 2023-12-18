@@ -69,6 +69,12 @@ class Orchestrator:
 
     def get_cost_and_tokens(self):
         return llm.estimate_price_and_tokens(self.get_message_as_str())
+    
+    # def count_tokens_left(self):
+    #     return llm.count_tokens_left()
+
+    # def count_tokens_total_used(self):
+    #     return llm.count_tokens_total_used()
 
     def add_message(self, message: str):
         self.messages.append(message)

@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import os
 from typing import Any, Dict
 import openai
+import tiktoken
 
 # load .env file
 load_dotenv()
@@ -85,3 +86,37 @@ def add_cap_ref(
     new_prompt = f"""{prompt} {prompt_suffix}\n\n{cap_ref}\n\n{cap_ref_content}"""
 
     return new_prompt
+
+# def count_tokens_left():
+#     """
+#     Count the number of tokens left in the OpenAI API key
+#     """
+#     return openai.Account.retrieve().data["max_tokens"]
+
+# def count_tokens_total_used():
+#     """
+#     Count the number of tokens used in the OpenAI API key
+#     """
+#     return openai.Account.retrieve().data["total_used_tokens"]
+
+def count_token_run_used(text: str):
+    """
+    Count the number of tokens used in the OpenAI API key for the current run.
+    """
+    enc = tiktoken.get_encoding("cl100k_base")
+    return len(enc.encode(text))
+
+def estimate_price_and_tokens(text):
+    """
+    Estimate the price and tokens used for a given text
+    """
+    COST_PER_1K_TOKENS = 0.0020
+    
+    tokens = count_token_run_used(text)
+    
+    estimated_cost = (tokens / 1000) * COST_PER_1K_TOKENS
+    
+    # round
+    estimated_cost = round(estimated_cost, 4)
+    
+    return estimated_cost, tokens
