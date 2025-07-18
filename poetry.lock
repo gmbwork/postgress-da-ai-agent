@@ -821,14 +821,14 @@ files = [
 ]
 
 [[package]]
-name = "pyautogen"
+name = "ag2"
 version = "0.2.1"
 description = "Enabling Next-Gen LLM Applications via Multi-Agent Conversation Framework"
 optional = false
 python-versions = ">=3.8, <3.12"
 files = [
-    {file = "pyautogen-0.2.1-py3-none-any.whl", hash = "sha256:25fa507efba3c276252fcf01f6ff61439ae5b6b8873b0625585407a7354c78c0"},
-    {file = "pyautogen-0.2.1.tar.gz", hash = "sha256:0071f8f6ee07641330335b2c03c82d9f004061cc7acbc48aba3bb4dfc9a39d87"},
+    {file = "ag2-0.2.1-py3-none-any.whl", hash = "sha256:25fa507efba3c276252fcf01f6ff61439ae5b6b8873b0625585407a7354c78c0"},
+    {file = "ag2-0.2.1.tar.gz", hash = "sha256:0071f8f6ee07641330335b2c03c82d9f004061cc7acbc48aba3bb4dfc9a39d87"},
 ]
 
 [package.dependencies]
